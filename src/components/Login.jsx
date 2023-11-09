@@ -5,14 +5,18 @@ import { Link } from "react-router-dom";
 import { TfiEmail } from "react-icons/tfi";
 import { PiPasswordFill } from "react-icons/pi";
 import { useRef, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axiosClient from "../axios-client";
+import jwtDecode from "jwt-decode";
 
 export default function Login() {
   const dispatch = useDispatch();
   const emailRef = useRef();
   const passwordRef = useRef();
 
-  const [errors, setErrors] = useState(null);
+  const [error, setError] = useState("");
+
   const onSubmitHandle = (event) => {
     event.preventDefault();
 
@@ -20,9 +24,7 @@ export default function Login() {
       email: emailRef.current.value,
       password: passwordRef.current.value,
     };
-
-    setErrors(null);
-
+    setError(null);
     axiosClient
       .post("/login", payload)
       .then(({ data }) => {
@@ -32,15 +34,8 @@ export default function Login() {
       })
       .catch((err) => {
         const response = err.response;
-        if (response && response.status === 422) {
-          if (response.data.errors) {
-            setErrors(response.data.errors);
-          } else {
-            setErrors({
-              email: [response.data.message],
-            });
-          }
-        }
+        toast.error(response.data.message);
+        setError(response.data.message);
       });
   };
 
@@ -48,12 +43,14 @@ export default function Login() {
     <div className="p-8">
       <h2 className="text-xl font-bold">Chào mừng đến Phenikaa MS</h2>
       <h3 className="text-lg font-medium mt-10 mb-5">Đăng nhập</h3>
+      {error && <ToastContainer theme="light" />}
       <form className="flex flex-col" onSubmit={onSubmitHandle}>
         <div className="relative">
           <TfiEmail className="absolute top-2 left-2.5 " size={"22"} />
           <input
             ref={emailRef}
             placeholder="Nhập email"
+            type="email"
             className="border pl-10 pr-2 py-1.5 rounded-md mb-4 w-full"
           />
         </div>
@@ -62,6 +59,7 @@ export default function Login() {
           <input
             ref={passwordRef}
             placeholder="Nhập mật khẩu"
+            type="password"
             className="border pl-10 pr-2 py-1.5 rounded-md w-full"
           />
         </div>
@@ -84,7 +82,17 @@ export default function Login() {
       <div className="flex justify-center">
         <GoogleLogin
           onSuccess={(res) => {
-            axiosClient.post("/login-with-google", res).then((res) => res);
+            const user = jwtDecode(res.credential);
+            console.log(res.credential);
+            axiosClient
+              .post("/login-with-google", { token: res.credential, user })
+              .then(({ data }) => {
+                dispatch(setUser(data.user));
+                dispatch(setToken(data.token));
+              })
+              .catch((err) => {
+                console.log(err);
+              });
             // dispatch(setToken(res.credential));
           }}
         />

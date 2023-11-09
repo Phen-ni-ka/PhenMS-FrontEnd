@@ -3,5 +3,19 @@
 @tailwind utilities;
 
 .content {
-  background-color: #f7f7fa;
+  min-height: 100vh;
+  height: fit-content;
+  padding-bottom: 2.5rem;
+  background-color: #e8e8e8;
+}
+
+.shadow-custom {
+  background-clip: border-box;
+  margin-top: 1.5rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  border-radius: 0.75rem;
+  background-color: rgb(33 150 243);
+  box-shadow: 0 10px 15px -3px rgba(33, 150, 243, 0.4),
+    0 4px 6px -4px rgba(33, 150, 243, 0.4);
 }

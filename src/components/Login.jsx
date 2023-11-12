@@ -4,18 +4,15 @@ import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { TfiEmail } from "react-icons/tfi";
 import { PiPasswordFill } from "react-icons/pi";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axiosClient from "../axios-client";
-import jwtDecode from "jwt-decode";
 
 export default function Login() {
   const dispatch = useDispatch();
   const emailRef = useRef();
   const passwordRef = useRef();
-
-  const [error, setError] = useState("");
 
   const onSubmitHandle = (event) => {
     event.preventDefault();
@@ -24,7 +21,6 @@ export default function Login() {
       email: emailRef.current.value,
       password: passwordRef.current.value,
     };
-    setError(null);
     axiosClient
       .post("/login", payload)
       .then(({ data }) => {
@@ -35,7 +31,6 @@ export default function Login() {
       .catch((err) => {
         const response = err.response;
         toast.error(response.data.message);
-        setError(response.data.message);
       });
   };
 
@@ -43,7 +38,7 @@ export default function Login() {
     <div className="p-8">
       <h2 className="text-xl font-bold">Chào mừng đến Phenikaa MS</h2>
       <h3 className="text-lg font-medium mt-10 mb-5">Đăng nhập</h3>
-      {error && <ToastContainer theme="light" />}
+      <ToastContainer theme="light" />
       <form className="flex flex-col" onSubmit={onSubmitHandle}>
         <div className="relative">
           <TfiEmail className="absolute top-2 left-2.5 " size={"22"} />
@@ -82,18 +77,16 @@ export default function Login() {
       <div className="flex justify-center">
         <GoogleLogin
           onSuccess={(res) => {
-            const user = jwtDecode(res.credential);
-            console.log(res.credential);
             axiosClient
-              .post("/login-with-google", { token: res.credential, user })
+              .post("/login-with-google", { token: res.credential })
               .then(({ data }) => {
                 dispatch(setUser(data.user));
                 dispatch(setToken(data.token));
               })
               .catch((err) => {
-                console.log(err);
+                console.log(err.response.data.message);
+                toast.error(err.response.data.message);
               });
-            // dispatch(setToken(res.credential));
           }}
         />
       </div>

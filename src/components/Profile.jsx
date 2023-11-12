@@ -10,7 +10,7 @@ export default function Profile() {
       .then(({ data }) => {
         setStudent(data);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.log(err.response));
   }, []);
   return (
     <div className="pt-6 px-4">

@@ -19,7 +19,7 @@ export default function IssueResult() {
 
   return (
     <div className="pt-6 px-4">
-      <h1 className="text-2xl font-medium text-gray-600">Danh sách lớp</h1>
+      <h1 className="text-2xl font-medium text-gray-600">Danh sách báo cáo</h1>
       <div className="bg-white px-6 py-8 rounded-2xl mt-8">
         <table className="w-full text-left text-gray-500 dark:text-gray-400 shadow-lg">
           <thead className="text-sm text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
